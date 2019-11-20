@@ -1,0 +1,17 @@
+cc_binary {
+    relative_install_path: "hw",
+    defaults: ["hidl_defaults"],
+    name: "YetestTest",
+    proprietary: true,
+    srcs: ["YetestTest.cpp"],
+
+    shared_libs: [
+        "liblog",
+        "libhardware",
+        "libhidlbase",
+        "libhidltransport",
+        "libutils",
+        "android.hardware.yetest@1.0",
+        "android.hardware.yetest@1.0-impl",
+    ],
+}

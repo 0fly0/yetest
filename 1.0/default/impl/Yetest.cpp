@@ -32,7 +32,7 @@ Return<void> Yetest::getData(getData_cb _hidl_cb) {
 void Yetest::loop() {
     while(1) {
         sleep(1);
-        ALOGI("Loop");
+        ALOGI("Loop m_data.x=%d, m_data.y=%d", m_data.x, m_data.y);
     }
 }
 
