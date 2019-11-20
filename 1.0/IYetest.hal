@@ -1,0 +1,6 @@
+package android.hardware.yetest@1.0;
+
+interface IYetest {
+	setData(YeData data) generates (YeStatus ret);
+	getData() generates (YeData ret);
+};

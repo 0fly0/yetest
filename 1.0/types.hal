@@ -1,0 +1,11 @@
+package android.hardware.yetest@1.0;
+
+enum YeStatus : int32_t {
+	SUCCESS = 0,
+	FAILED,
+};
+
+struct YeData {
+	int32_t x;
+	int32_t y;
+};

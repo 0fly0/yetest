@@ -1,0 +1,2 @@
+/(vendor|system/vendor)/bin/hw/android\.hardware\.yetest@1\.0-service    u:object_r:yetest_exec:s0
+/(vendor|system/vendor)/lib(64)?/hw/android\.hardware\.yetest@1\.0-impl\.so     u:object_r:same_process_hal_file:s0

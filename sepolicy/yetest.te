@@ -1,0 +1,9 @@
+type yetest, domain;
+		
+type yetest_exec, exec_type, vendor_file_type, file_type;
+hwbinder_use(yetest);
+init_daemon_domain(yetest)
+add_hwservice(yetest,yetest_hwservice)
+
+allow yetest hwservicemanager_prop:file {read open getattr map};
+allow yetest system_file:dir {read open getattr search};

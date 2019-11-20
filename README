@@ -1,0 +1,62 @@
+1. 创建目录
+	cd  hardware/interfaces
+	mkdir -p yetest/1.0
+2. 定义hal接口IYetest.hal
+	package android.hardware.yetest@1.0;
+	interface IYetest {
+	    setData(YeData data) generates (YeStatus ret);
+	    getData() generates (YeData ret);
+	};
+3. 根据.hal自动生成impl库的cpp实现
+	在hardware/interfaces/yetest/1.0目录执行hidl-gen命令：
+	PACKAGE=android.hardware.yetest@1.0
+	LOC= default/impl
+	hidl-gen -o $LOC -Lc++-impl -r android.hardware:hardware/interfaces $PACKAGE 
+4. 生成impl的Android.bp
+	hidl-gen -o default -Landroidbp-impl -r android.hardware:hardware/interfaces $PACKAGE
+5. 生成hidl的Android.bp
+	执行hardware/interfaces/update-makefiles.sh
+6. 修改device/fsl/imx8q/XXX/manifest.xml
+	添加以下代码：
+	    <hal format="hidl">
+	        <name>android.hardware.yetest</name>
+	        <transport>hwbinder</transport>
+	        <version>1.0</version>
+	        <interface>
+	            <name>IYetest</name>
+	            <instance>default</instance>
+	        </interface>
+	    </hal>
+7. 编写.rc文件
+	配置自启动
+	service vendor.yetest-1.0 /vendor/bin/hw/android.hardware.yetest@1.0-service
+	    class hal
+	    user system
+	    group system
+8. 添加PRODUCT_PACKAGES
+	在device/fsl/imx8q/XXX/XXX.mk中新增
+	打包.so和service到vendor.img
+	# Yetest HAL
+	PRODUCT_PACKAGES += \
+	     android.hardware.yetest@1.0-impl \
+	     android.hardware.yetest@1.0-service
+9. device/fsl/imx8q/XXX/BoardConfig.mk中指定sepolicy路径：
+	BOARD_SEPOLICY_DIRS +=  hardware/interfaces/yetest/sepolicy
+10. 在hardware/interfaces/yetest/sepolicy目录新增yetest.te:
+	type yetest, domain;
+		
+	type yetest_exec, exec_type, vendor_file_type, file_type;
+	hwbinder_use(yetest);
+	init_daemon_domain(yetest)
+	add_hwservice(yetest,yetest_hwservice)
+		
+	allow yetest hwservicemanager_prop:file {read open getattr map};
+	allow yetest system_file:dir {read open getattr search};
+11. hardware/interfaces/yetest/sepolicy目录下新增file_contexts:
+	绑定android.hardware.yetest@1.0-service与yetest_exec的关系的关键
+	/(vendor|system/vendor)/bin/hw/android\.hardware\.yetest@1\.0-service    u:object_r:yetest_exec:s0
+	/(vendor|system/vendor)/lib(64)?/hw/android\.hardware\.yetest@1\.0-impl\.so     u:object_r:same_process_hal_file:s0
+12. 新增harware/interfaces/yetest/sepolicy/hwservice_contexts:
+	android.hardware.yetest::IYetest u:object_r:yetest_hwservice:s0
+13. 新增harware/interfaces/yetest/sepolicy/hwservice.te:
+    type yetest_hwservice, hwservice_manager_type;
